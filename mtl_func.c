@@ -34,7 +34,7 @@ both csv1.txt and mtl.txt to be kept in the same directory of the exe file.
 #include <stdio.h>
 #include <string.h>
 
-#define BUFFER_SIZE 10000  // buffer size is growing in MODE1 in MODE 2 buffer size wil be fixed one.
+#define BUFFER_SIZE 10000  // 
 #define BUFFER_2_SIZE 20
 
 char line[100];
