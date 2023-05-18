@@ -8,6 +8,14 @@
 
 Function: This program Evalauted MTL operators with time reference from 'NOW' - the current time and continues to evalaute the results for every time unit.
 
+MODE 1 and MODE 2 implemented only for G and F operator functions.
+
+MODE:1 = In this mode-1 the buffer size  grows, needs more  memory for longer ranges, but the processing time is less (the buffer/array elements are not shifted to accomadate new entries)
+
+MODE:2 = In this mode-2 the buffer size  kept constant( the incoming APs are filled till the size of the buffer array, and new values are entered at the front of the buffer, the last value of the buffer is neglected and
+         the elments of the array are shifted by one position to accomadate the new value of AP,
+         this mode, needs fixed buffer size and suitable for memory constrained systems, but more processing needed to shift the elements in the bufffer-array.
+
 // Developed by P Thirumeni -203085002, PhD, student IIT Dharwad India.
 
 // Under the guidance of PhD. Supervisors, Dr.Rajshekar.K (IIT-Dh), Dr.C.M.Ananda (CSIR-NAL)
@@ -33,7 +41,7 @@ both csv1.txt and mtl.txt to be kept in the same directory of the exe file.
 #include <stdio.h>
 #include <string.h>
 
-#define BUFFER_SIZE 1000000  // buffer size is growing in MODE1 in MODE 2 buffer size wil be fixed one.
+#define BUFFER_SIZE 10000  // buffer size is growing in MODE1 in MODE 2 buffer size wil be fixed one.
 #define BUFFER_2_SIZE 20
 
 char line[100];
@@ -149,7 +157,9 @@ printf("\nAll MTL formuals read.\n");
         if (time >= up_times[i])
 
             {
-            printf("\nGlobally output for Timestamp=%d and Formula ID %d for the input values of p for evaluation timestamp range (%d to %d) => Output = %d\n", time,fids[i],((time-intervals[i])+1),time,mtl_g_output);
+
+//            printf("\n intervals[i] %d,intervals[i]+1 %d,fids[i] %d,((time-intervals[i])+1) %d", intervals[i],intervals[i]+1,fids[i],((time-intervals[i])+1));
+            printf("\nGlobally output for Timestamp=%d and Formula ID %d for the input values of p for evaluation timestamp range (%d to %d) => Output = %d\n",  time-up_times[i],fids[i],((time-intervals[i])+1),time,mtl_g_output);
             int jj;
 
             for ( jj = front; jj < rear; jj++)
@@ -163,11 +173,11 @@ printf("\nAll MTL formuals read.\n");
 
 //MTL_F
 
-    int mtl_f_output = MTL_F(p3, send_interval_F);
+    int mtl_f_output = MTL_F(p2, send_interval_F);
     printf("\n");
     printf("\nTimestamp: %d", time);
     printf("\nMTL_F Output %d",mtl_f_output);
-    printf("\nP3: %d\n", p3);
+    printf("\nP3: %d\n", p2);
     printf("MTL_F interval: %d", send_interval_F );
     printf("\nMTL_F effective buffer size: %d", rear_f - front_f);
     // printf("\nup_times[i+1] %d", up_times[i+1]);
@@ -182,7 +192,7 @@ printf("\nAll MTL formuals read.\n");
         if (time >= up_times[i+1])
 
             {
-            printf("\nFinally output for Timestamp=%d and Formula ID %d for the input values of p for evaluation timestamp range (%d to %d) => Output = %d\n", time,fids[i+1],(time-(intervals[i+1])+1),time,mtl_f_output);
+            printf("\nFinally output for Timestamp=%d and Formula ID %d for the input values of p for evaluation timestamp range (%d to %d) => Output = %d\n", time-up_times[i+1],fids[i+1],(time-(intervals[i+1])+1),time,mtl_f_output);
 
             int jjj;
 
@@ -212,14 +222,15 @@ printf("\nAll MTL formuals read.\n");
 int MTL_G(int p, int interval) {
     int i;
 
-    buffer_g[rear++] = p;
+    buffer_g[rear] = p;
+    rear = (rear + 1) % BUFFER_SIZE;
 
-    if (rear - front > interval) {
-        front++;
+    if ((rear + BUFFER_SIZE - front) % BUFFER_SIZE > interval) {
+        front = (front + 1) % BUFFER_SIZE;
     }
 
-    if (rear - front == interval) {
-        for (i = front; i < rear; i++) {
+    if ((rear + BUFFER_SIZE - front) % BUFFER_SIZE == interval) {
+        for (i = front; i != rear; i = (i + 1) % BUFFER_SIZE) {
             if (buffer_g[i] == 0) {
                 return 0;
             }
@@ -231,18 +242,21 @@ int MTL_G(int p, int interval) {
     }
 }
 
+
+
 int MTL_F(int p, int interval) {
     int i;
 
-    buffer_f [rear_f++] = p;
+    buffer_f[rear_f] = p;
+    rear_f = (rear_f + 1) % BUFFER_SIZE;
 
-    if (rear_f - front_f > interval) {
-        front_f++;
+    if ((rear_f + BUFFER_SIZE - front_f) % BUFFER_SIZE > interval) {
+        front_f = (front_f + 1) % BUFFER_SIZE;
     }
 
-    if (rear_f - front_f == interval) {
+    if ((rear_f + BUFFER_SIZE - front_f) % BUFFER_SIZE == interval) {
         int exists_one = 0;
-        for (i = front_f; i < rear_f; i++) {
+        for (i = front_f; i != rear_f; i = (i + 1) % BUFFER_SIZE) {
             if (buffer_f[i] == 1) {
                 exists_one = 1;
                 break;
@@ -258,3 +272,4 @@ int MTL_F(int p, int interval) {
         return -1;
     }
 }
+
