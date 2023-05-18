@@ -8,9 +8,12 @@
 
 Function: This program Evalauted MTL operators with time reference from 'NOW' - the current time and continues to evalaute the results for every time unit.
 
-MODE:1 = In this mode-1 the buffer size  grows, needs more  memory for longer ranges, but the processing time is less (the array elements are not shifted to accomadate new entrys)
+MODE 1 and MODE 2 implemented only for G and F operator functions.
 
-MODE:2 = In this mode-2 the buffer size  kept constant( the incoming APs are filled till the size of the buffer array, and new values are entered at the front of the buffer, the last value of the buffer is neglected and the elments of the array is shited by one position to accomadate the new value of AP,
+MODE:1 = In this mode-1 the buffer size  grows, needs more  memory for longer ranges, but the processing time is less (the buffer/array elements are not shifted to accomadate new entries)
+
+MODE:2 = In this mode-2 the buffer size  kept constant( the incoming APs are filled till the size of the buffer array, and new values are entered at the front of the buffer, the last value of the buffer is neglected and
+         the elments of the array are shifted by one position to accomadate the new value of AP,
          this mode, needs fixed buffer size and suitable for memory constrained systems, but more processing needed to shift the elements in the bufffer-array.
 
 // Developed by P Thirumeni -203085002, PhD, student IIT Dharwad India.
