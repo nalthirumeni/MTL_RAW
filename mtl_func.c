@@ -15,7 +15,7 @@ Function: This program Evalauted MTL operators with time reference from 'NOW' - 
 
 //   P THIRUMENI  date :10.05.23
 
-// Functions : G,F,U,W,H,P,S,X,Y
+// Functions : G,F,U,R,H,P,S,X,Y
 
 Test G and F in MODE_1
 
