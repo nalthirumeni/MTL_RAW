@@ -1,8 +1,8 @@
 
-/* 
+/*
 			+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 
-                                                            MTL_RAW
+
+                                                MTL_RAW
 
 			+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -74,6 +74,7 @@ int R_satisfied_ts =0;
 
 int q_full_r=0;
 int flag_q_r =0;
+int alt_m_r;
 
 
 //Function declarations here.
@@ -154,7 +155,7 @@ printf("\nAll MTL formuals read.\n");
 
     sscanf(line, "%d,%d,%d,%d,%d,%d", &time, &p1, &p2, &p3, &p4, &p5);
 
-
+/*
  printf("\n++++++++++++++++++++++++++++++++++++++++++++++++");
 //MTL_G
     int mtl_g_output = MTL_G(p2, send_interval);
@@ -223,7 +224,7 @@ printf("\nAll MTL formuals read.\n");
 
             }
 
-
+*/
     //MTL_U
 
     //int MTL_U(int p1, int p2, int start_time,int end_time)
@@ -234,11 +235,10 @@ printf("\nAll MTL formuals read.\n");
     printf("\n++++++++++++++++++++++++++++++++++++++++++++++++");
     printf("\nTimestamp: %d", time);
     printf("\nUntil.\n");
-    printf("\np: %d, q %d", p3,p2);
-    int mtl_u_output = MTL_U(p3,p5,3,19);
+    int mtl_u_output = MTL_U(p2,p1,3,7);
     printf("\nMTL_Until Output %d",mtl_u_output);
 
-
+/*
 
      //MTL_R
 
@@ -250,13 +250,13 @@ printf("\nAll MTL formuals read.\n");
     printf("\n++++++++++++++++++++++++++++++++++++++++++++++++");
     printf("\nTimestamp: %d", time);
     printf("\nRelease.\n");
-    printf("\np: %d, q %d", p3,p2);
-    int mtl_r_output = MTL_R(p2,p5,5,9);
+    printf("\np: %d, q %d", p1,p2);
+    int mtl_r_output = MTL_R(p1,p2,3,7);
     printf("\nMTL_Release Output %d",mtl_r_output);
     printf("\n\n");
     printf("\n=================================================================================================================================================");
 
-
+*/
     }  //while ends here
 
 
@@ -347,6 +347,7 @@ int MTL_U(int p1, int p2, int start_time,int end_time)
 
    int interval =(end_time-start_time)+1;
    printf("\nInterval = %d",interval);
+   printf("\nCurrent value of p:%d, q:%d", p2,p1);
 
    rear_u_p1 = (rear_u_p1 + 1) % interval;
    buffer_u_p1[rear_u_p1] = p1;
@@ -386,7 +387,7 @@ int MTL_U(int p1, int p2, int start_time,int end_time)
    //     printf("\n Before - U_satisfied_flag =%d, q_full=%d,",U_satisfied_flag,q_full);
 
         //printf("\nUntil evaluation range , Row#1:Time stamp,Row#2: p1,Row#3: p2");
-        printf("\n\nTime stamp:");
+         printf("\n\nTime stamp:");
          for (int m1=0; m1<=interval-1 ;m1++)
 
          {
@@ -412,103 +413,111 @@ int MTL_U(int p1, int p2, int start_time,int end_time)
          printf("\n");
 
 
-         // Find the lowest timestamp in the buffer for iteration
 
-        int lowest_timestamp = buffer_u_timestamp[0];
-        int lowest_timestamp_index = 0;
-            for (int i = 1; i < interval; i++)
-            {
-                if (buffer_u_timestamp[i] < lowest_timestamp)
 
-                    {
-                        lowest_timestamp = buffer_u_timestamp[i];
-                        lowest_timestamp_index = i;
-                        }
-            }
+         // Find the lowest timestamp index in the buffer for iteration
+    int lowestIndex,highestIndex,currentIndex;
+        highestIndex= rear_u_p2;
+        lowestIndex = ((highestIndex+1)%interval);
+        currentIndex = lowestIndex;
+        int co=0;
 
-        for (int m=lowest_timestamp_index; m<=interval-1 ;m++)
+        printf("Until evaluation for the time range from =%d to =%d ", buffer_u_timestamp[lowestIndex],buffer_u_timestamp[highestIndex]);
 
-        {
-
-           // printf ("\n Inside for..");
-
-            if ((buffer_u_p1[m] == 1) &&  (buffer_u_p2[m] == 1) && (U_satisfied_flag ==0))
+        while (1 == 1)
 
             {
-            U_satisfied_ts = (buffer_u_timestamp[m]);
-            U_satisfied_flag =1; // just to print only once for U satisfaction.
 
+
+          //  printf("\n Until current index =%d ", currentIndex);
+
+        //    printf("\n count BEFORE INCREMENT...= %d,", co);
+
+
+            if ((buffer_u_p1[currentIndex] == 1) &&  (buffer_u_p2[currentIndex] == 1) && (U_satisfied_flag ==0))
+            {
+
+          //  printf ("\nInside p 1 q1 result 1");
+            U_satisfied_ts = (buffer_u_timestamp[currentIndex]);
+            U_satisfied_flag =1;
             printf ("\nUntil SATISFIED at %d,", U_satisfied_ts);
             printf ("\nUntil satisfied since p=1 and q=1");
-            printf ("\nResult for timestamp = %d, p1=%d until p2 =%d", (time-end_time),p1,p2,((time-end_time)+start_time),((time-end_time)+end_time));
-
-
+            printf ("\nResult : Until at TIME STAMP = %d, for the evaluation range start_time = %d  to  end_time = %d",(buffer_u_timestamp[highestIndex]-end_time), buffer_u_timestamp[lowestIndex],buffer_u_timestamp[highestIndex]);
+            printf ("\nUNTIL_OUTPUT = 1");
             return 1;
             }
 
-             if ((buffer_u_p1[m] == 0) &&  (buffer_u_p2[m] == 1) && (U_satisfied_flag ==0))
-
+            else if ((buffer_u_p1[currentIndex] == 0) &&  (buffer_u_p2[currentIndex] == 1) && (U_satisfied_flag ==0))
             {
+        //    printf ("\nInside p 0 q1 result 1 ");
+            U_satisfied_ts = (buffer_u_timestamp[currentIndex]);
+            U_satisfied_flag =1;
+            printf ("\nUntil SATISFIED at %d,", U_satisfied_ts);
+            printf ("\nUntil satisfied since p=0 and q=1");
+            printf ("\nResult : Until at TIME STAMP = %d, for the evaluation range start_time = %d  to  end_time = %d",(buffer_u_timestamp[highestIndex]-end_time), buffer_u_timestamp[lowestIndex],buffer_u_timestamp[highestIndex]);
+            printf ("\nUNTIL_OUTPUT = 1");
+            return 1;
+            }
 
-             U_satisfied_ts = (buffer_u_timestamp[m]);
-             U_satisfied_flag =1; // just to print only once for U satisfaction.
-
-             printf ("\np1=%d until p2 =%d SATISFIED at %d,",buffer_u_p1 [m],buffer_u_p2[m],U_satisfied_ts);
-             printf ("\nUntil satisfied since p=0 and q=1");;
-          //   printf ("\nbuffer_u_timestamp[m],U_satisfied_flag ",buffer_u_timestamp[m],U_satisfied_flag );
-             printf ("\nResult for timestamp = %d, p1=%d until p2 =%d", (time-end_time),p1,p2,((time-end_time)+start_time),((time-end_time)+end_time));
-
-             return 1;
-              }
-
-            if ((buffer_u_p1[m] == 0) &&  (buffer_u_p2[m] == 0) && (U_satisfied_flag ==0))
+            else if ((buffer_u_p1[currentIndex] == 0) &&  (buffer_u_p2[currentIndex] == 0) && (U_satisfied_flag ==0))
             {
-
-             U_satisfied_ts = (buffer_u_timestamp[m]);
-             U_satisfied_flag =1; // just to print only once for U satisfaction.
-            printf ("\nUntil FAILED AT = %d.....",(buffer_u_timestamp[m]));
-             printf ("\n Until FAILED since p=0 and q=0");
-             //printf ("\nbuffer_u_timestamp[m],U_satisfied_flag ",buffer_u_timestamp[m],U_satisfied_flag );
-            printf ("\nResult for timestamp = %d, p1=%d until p2 =%d", (time-end_time),p1,p2,((time-end_time)+start_time),((time-end_time)+end_time));
-
+        //    printf ("\nInside p 0 q 0 result 0");
+            U_satisfied_ts = (buffer_u_timestamp[currentIndex]);
+            U_satisfied_flag =0;
+            printf ("\nUntil FAILED at %d,", U_satisfied_ts);
+            printf ("\nUntil failed since p=0 and q=0 at time stamp %d ",U_satisfied_ts);
+            printf ("\nResult : Until at TIME STAMP = %d, for the evaluation range start_time = %d  to  end_time = %d",(buffer_u_timestamp[highestIndex]-end_time), buffer_u_timestamp[lowestIndex],buffer_u_timestamp[highestIndex]);
+            printf ("\nUNTIL_OUTPUT = 0");
             return 0;
             }
 
-
-
-           if ((buffer_u_p1[m] == 1) &&  (buffer_u_p2[m] == 0) && (U_satisfied_flag ==0)) //next..wait .case...
-
+            else if ((buffer_u_p1[currentIndex] == 1) &&  (buffer_u_p2[currentIndex] == 0) && (U_satisfied_flag ==0))
             {
-              printf ("\nTS=%d Until... MAY BE...",buffer_u_timestamp[m]);
-          //  printf ("\nResult for timestamp = %d, p1=%d until p2 =%d", (time-end_time),p1,p2,((time-end_time)+start_time),((time-end_time)+end_time));
-           // printf ("\np1 until p2  next ..wait...");
-          //  return -1;
+
+        //    printf ("\nInside p 1 q 0 result -1");
+            U_satisfied_ts = (buffer_u_timestamp[currentIndex]);
+            U_satisfied_flag =0;
+            printf ("\nUntil MAYBE..at time stamp...%d,", U_satisfied_ts);
+            //return -1;
+                if (U_satisfied_ts == buffer_u_timestamp[highestIndex])
+
+                {
+            U_satisfied_ts = (buffer_u_timestamp[currentIndex]);
+            U_satisfied_flag =0;
+            printf ("\n current time stamp = %d, highest time stamp = %d ",U_satisfied_ts,buffer_u_timestamp[highestIndex]);
+            printf ("\nUntil FAILED at %d,", U_satisfied_ts);
+            printf ("\nUntil failed since p=1 and q=0 for the entire given time range");
+            printf ("\nResult : Until at TIME STAMP = %d, for the evaluation range start_time = %d  to  end_time = %d",(buffer_u_timestamp[highestIndex]-end_time), buffer_u_timestamp[lowestIndex],buffer_u_timestamp[highestIndex]);
+            printf ("\nUNTIL_OUTPUT = 0");
+            return 0;
+                }
             }
 
-            else if (U_satisfied_flag == 1) //already satisifed...
-
+            else if (U_satisfied_flag ==1)
             {
-                printf ("\nUntil  already satisfied......");
+            printf ("\nUntil Already satisfied...");
+            return -1;
             }
-
-            // printf("\n End...");
-
-
-
-         }
-
-
-
-
-        }
-
-
-
-
-      //
-        return -1;
-
+            ////////////////iteration technic here...
+            currentIndex = (currentIndex + 1) % interval; // update current index to point to next higher time stamp with wraparound.
+        //    printf ("\n AFTER updated CURRENT INDEX currentIndex = %d....",currentIndex);
+            if (currentIndex == (highestIndex + 1) % interval) ////// exits when index is lowvalue_index-1 with modulo
+           {
+        //    printf ("\nInside break condition acheived, current index %d and high index %d",currentIndex,highestIndex);
+            break; // BREAK WHILE LOOP
             }
+            co=co+1;
+        //     printf ("\n count AFTER INCREMENT %d..",co);
+
+              }//while loop ends.
+
+
+             } // q_full if loop ends.
+
+
+           return -1;
+
+            } //Until function ends
 
 
 
@@ -583,11 +592,16 @@ int MTL_R(int p1, int p2, int start_time,int end_time)
 
          printf("\n");
 
-
+/*
          // Find the lowest timestamp in the buffer for iteration
+
+      //   printf("\ncurrent index,%d",rear_r_p2);
+     //    printf("\ncurrent time value in index,%d",buffer_r_timestamp[rear_r_p2]);
 
         int r_lowest_timestamp = buffer_r_timestamp[0];
         int r_lowest_timestamp_index = 0;
+    //    int r_lowest_timestamp_index = 0;
+
             for (int i = 1; i < interval; i++)
             {
                 if (buffer_r_timestamp[i] < r_lowest_timestamp)
@@ -598,11 +612,25 @@ int MTL_R(int p1, int p2, int start_time,int end_time)
                         }
             }
 
-        for (int m=r_lowest_timestamp_index; m<=interval-1 ;m++)
+            */
+            int current_index= rear_r_p2;
+            int previous_index = ((current_index-1+interval)%interval);
+
+            printf("\ncurrent index,%d",current_index);
+            printf("\nprevious index,%d",previous_index);
+
+            int highest_timestamp=buffer_r_timestamp[current_index];
+            int lowest_timestamp=highest_timestamp-interval+1;
+
+
+        for (int m=lowest_timestamp; m<=highest_timestamp ;m++)
 
         {
 
 
+            printf ("\n value of m=%d\n",m);
+            alt_m_r=m;
+            printf ("\n value of lowest_timestamp %d,highest_timestamp =%d, m = %d  ", lowest_timestamp,highest_timestamp,m);
 
             if ((buffer_r_p1[m] == 1) &&  (buffer_r_p2[m] == 1) && (R_satisfied_flag ==0)) // p=1,q=1
 
@@ -621,17 +649,20 @@ int MTL_R(int p1, int p2, int start_time,int end_time)
 
             {
 
-             printf ("\nTS=%d p yet to arrive to release q .. MAY BE..next..step...",buffer_u_timestamp[m]);
+             printf ("\nTS=%d p yet to arrive to release q .. MAY BE..next..step...",buffer_r_timestamp[m]);
 
-             if (m == interval-1)
+        //     printf ("\nbuffer_r_timestamp[m]%d,buffer_r_timestamp[rear_r_p2]%d ",buffer_r_timestamp[m],buffer_r_timestamp[rear_r_p2]);
 
-                {   R_satisfied_ts = (buffer_r_timestamp[m]);
+                if (buffer_r_timestamp[m] == buffer_r_timestamp[rear_r_p2] )
+
+                {
+                    R_satisfied_ts = (buffer_r_timestamp[m]);
                     R_satisfied_flag =1;
                     printf ("\np Release q, SATISFIED at %d,", R_satisfied_ts);
-                    printf ("\nResult for timestamp = %d, p1=%d Release p2 =%d, q held true in the entire given range...", (time-end_time),p1,p2,((time-end_time)+start_time),((time-end_time)+end_time));
+                    printf ("\nResult for timestamp = %d, p=%d Release q =%d, q held true in the entire given time range...", (time-end_time),p1,p2,((time-end_time)+start_time),((time-end_time)+end_time));
                     return 1;
-
                 }
+
              }
              //return -1;
 
@@ -648,7 +679,7 @@ int MTL_R(int p1, int p2, int start_time,int end_time)
 
 
 
-           if ((buffer_u_p1[m] == 1) &&  (buffer_u_p2[m] == 0) && (U_satisfied_flag ==0)) // p=1,q=0 fails....
+           if ((buffer_r_p1[m] == 1) &&  (buffer_r_p2[m] == 0) && (R_satisfied_flag ==0)) // p=1,q=0 fails....
 
             {
              R_satisfied_ts = (buffer_r_timestamp[m]);
@@ -667,12 +698,13 @@ int MTL_R(int p1, int p2, int start_time,int end_time)
             // printf("\n End...");
 
 
-         }
+         } //for loop end
 
 
 
 
-        }
+
+        }  // loop end
 
 
       //
