@@ -93,6 +93,8 @@ int main() {
     printf("\n                              +++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     printf("\n                                               MTL_RAW ONLINE MONITORING ");
     printf("\n                              +++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    printf("\n                                 P Thirumeni_203085002_IIT DH");
+
     printf("\n\n");
 
 
@@ -155,7 +157,7 @@ printf("\nAll MTL formuals read.\n");
 
     sscanf(line, "%d,%d,%d,%d,%d,%d", &time, &p1, &p2, &p3, &p4, &p5);
 
-/*
+
  printf("\n++++++++++++++++++++++++++++++++++++++++++++++++");
 //MTL_G
     int mtl_g_output = MTL_G(p2, send_interval);
@@ -224,7 +226,7 @@ printf("\nAll MTL formuals read.\n");
 
             }
 
-*/
+
     //MTL_U
 
     //int MTL_U(int p1, int p2, int start_time,int end_time)
