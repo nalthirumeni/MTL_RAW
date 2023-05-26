@@ -17,7 +17,7 @@ Function: This program Evalauted MTL operators with time reference from 'NOW' - 
 
 // Functions : G,F,U,W,H,P,S,X,Y
 
-Test G and F in MODE_1
+//Tested G,F,U,R working.
 
 csv1.txt files containts the APs. with time stamp
 mtl.txt contains the MTL formula. (simple/single formulas)
