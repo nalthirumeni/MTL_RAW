@@ -40,7 +40,7 @@ both csv1.txt and mtl.txt to be kept in the same directory of the exe file.
 #define BUFFER_SIZE_R 1000 // for release
 
 char line[100];
-int num_formulas = 6; // change this to the number of formulas in your file
+int num_formulas = 7; // change this to the number of formulas in your file
 char* formula_line;
 int time, p1, p2, p3, p4, p5;
 int fids[BUFFER_2_SIZE], low_times[BUFFER_2_SIZE], up_times[BUFFER_2_SIZE], intervals[BUFFER_2_SIZE];
@@ -230,12 +230,14 @@ printf("\nAll MTL formuals read.\n");
     //int MTL_U(int p1, int p2, int start_time,int end_time)
 
    // printf("\nbefore until func. calling ... rear_u_p1=%d,rear_u_p2=%d\n",rear_u_p1,rear_u_p2);
-
+    int u_lowtime=low_times[4];
+    int u_hightime=up_times[4];
     printf("\n");
     printf("\n++++++++++++++++++++++++++++++++++++++++++++++++");
     printf("\nTimestamp: %d", time);
     printf("\nUntil.\n");
-    int mtl_u_output = MTL_U(p2,p1,3,7);
+    int mtl_u_output = MTL_U(p2,p1,u_lowtime,u_hightime);
+    printf("\nUntil-low time %d, high time %d",u_lowtime,u_hightime);
     printf("\nMTL_Until Output %d",mtl_u_output);
 
 
@@ -245,13 +247,15 @@ printf("\nAll MTL formuals read.\n");
     //int MTL_R(int p1, int p2, int start_time,int end_time)
 
 
-
+    int r_lowtime=low_times[6];
+    int r_hightime=up_times[6];
     printf("\n");
     printf("\n++++++++++++++++++++++++++++++++++++++++++++++++");
     printf("\nTimestamp: %d", time);
     printf("\nRelease.\n");
     //printf("\np: %d, q %d", p1,p2);
-    int mtl_r_output = MTL_R(p1,p2,3,7);
+    int mtl_r_output = MTL_R(p1,p2,r_lowtime,r_hightime);
+    printf("\nRelease - low time %d, high time %d",r_lowtime,r_hightime);
     printf("\nMTL_Release Output %d",mtl_r_output);
     printf("\n\n");
     printf("\n=================================================================================================================================================");
@@ -370,14 +374,16 @@ int MTL_U(int p1, int p2, int start_time,int end_time)
     if ((rear_u_p1 == (interval-1)) && (rear_u_p2 == (interval-1)) && (flag_q == 0) )
 
     {
-       printf("\n First time Until_Que_full");
+       printf("\n*****************************************");
+       printf("\n\n First time Until_Que_full\n\n");
+       printf("\n*****************************************");
        q_full =1;
        flag_q =1;
     }
     else if (q_full == 0)
 
     {
-            printf ("\nWAIT to fill.....Until_Que,q_full =%d ",q_full);
+            printf ("\n[][][][][][][][]WAIT to fill.....Until_Que,q_full =%d ",q_full);
 
     }
 
@@ -536,7 +542,10 @@ int MTL_R(int p1, int p2, int start_time,int end_time)
 
 {
 
+
+
    int interval =(end_time-start_time)+1;
+   printf("\nSTART TIME  %d, END TIME %d Interval = %d",start_time,end_time,interval);
    printf("\nInterval = %d",interval);
    printf("\nCurrent value of p:%d, q:%d", p2,p1);
 
@@ -549,25 +558,28 @@ int MTL_R(int p1, int p2, int start_time,int end_time)
    buffer_r_timestamp[rear_r_p2] = time;
 
 
-   // printf("\n R_satisfied_flag =%d, q_full=%d,",R_satisfied_flag,q_full);
+   // printf("\n R_satisfied_flag =%d, q_full_r=%d,",R_satisfied_flag,q_full_r);
 
- //   printf("\nrear_r_p1=%d,rear_r_p2=%d, interval = %d",rear_r_p1,rear_r_p2,interval);
+    printf("\nrear_r_p1=%d,rear_r_p2=%d, interval = %d, flag_q_r=%d",rear_r_p1,rear_r_p2,  interval,flag_q_r);
 
-    if ((rear_r_p1 == (interval-1)) && (rear_r_p2 == (interval-1)) && (flag_q == 0) )
-
-    {
-       printf("\n First time Release_Que_full");
-       q_full =1;
-       flag_q =1;
-    }
-    else if (q_full == 0)
+    if ((rear_r_p1 == (interval-1)) && (rear_r_p2 == (interval-1)) && (flag_q_r == 0) )
 
     {
-            printf ("\nWAIT to fill.....Release_Que,q_full =%d ",q_full);
+       printf("\n*****************************************");
+       printf("\n\n First time Release_Que_full\n\n");
+       printf("\n*****************************************");
+
+       q_full_r =1;
+       flag_q_r =1;
+    }
+    else if (q_full_r == 0)
+
+    {
+            printf ("\n    [][][][][][][][] WAIT to fill.....Release_Que,q_full_r =%d ",q_full_r);
 
     }
 
-         if (q_full == 1)
+         if (q_full_r == 1)
 
          {
 
@@ -575,7 +587,7 @@ int MTL_R(int p1, int p2, int start_time,int end_time)
 
         R_satisfied_flag=0;
 
-   //     printf("\n Before - R_satisfied_flag =%d, q_full=%d,",R_satisfied_flag,q_full);
+   //     printf("\n Before - R_satisfied_flag =%d, q_full_r=%d,",R_satisfied_flag,q_full_r);
 
         //printf("\nRelease evaluation range , Row#1:Time stamp,Row#2: p1,Row#3: p2");
          printf("\n\nTime stamp:");
@@ -702,7 +714,7 @@ int MTL_R(int p1, int p2, int start_time,int end_time)
               }//while loop ends.
 
 
-             } // q_full if loop ends.
+             } // q_full_r if loop ends.
 
 
         //   return -1;
